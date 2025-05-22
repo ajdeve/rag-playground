@@ -1,0 +1,51 @@
+{
+  "dataset": "ai_engineering",
+  "description": "Test questions for evaluating RAG system performance on AI engineering topics",
+  "version": "1.0",
+  "questions": [
+    "Should I use RAG or fine-tune my language model?",
+    "How much do OpenAI embeddings cost compared to local models?",
+    "What's a good chunk size for documentation?",
+    "How do I know if my RAG system is working well?",
+    "Why is my RAG system making things up?",
+    "Which embedding model should I choose?",
+    "What vector database is best for beginners?", 
+    "How do I make my RAG system faster?",
+    "What should I include in my RAG prompts?",
+    "How do I handle different types of documents in RAG?",
+    "What's the difference between semantic and keyword search?",
+    "When should I use approximate nearest neighbor search?",
+    "How do I prevent my RAG from hallucinating?",
+    "What are the key metrics for evaluating retrieval quality?",
+    "Should I use local or cloud-based embeddings for production?"
+  ],
+  "categories": {
+    "architecture": ["Should I use RAG or fine-tune my language model?"],
+    "cost": ["How much do OpenAI embeddings cost compared to local models?"],
+    "evaluation": ["How do I know if my RAG system is working well?", "What are the key metrics for evaluating retrieval quality?"],
+    "preprocessing": ["What's a good chunk size for documentation?"],
+    "issues": ["Why is my RAG system making things up?", "How do I prevent my RAG from hallucinating?"],
+    "performance": ["How do I make my RAG system faster?", "When should I use approximate nearest neighbor search?"],
+    "optimization": ["What should I include in my RAG prompts?"],
+    "infrastructure": ["What vector database is best for beginners?", "Should I use local or cloud-based embeddings for production?"]
+  },
+  "difficulty_levels": {
+    "beginner": [
+      "Should I use RAG or fine-tune my language model?",
+      "What vector database is best for beginners?",
+      "What's the difference between semantic and keyword search?"
+    ],
+    "intermediate": [
+      "How much do OpenAI embeddings cost compared to local models?",
+      "What's a good chunk size for documentation?",
+      "How do I know if my RAG system is working well?",
+      "Which embedding model should I choose?"
+    ],
+    "advanced": [
+      "Why is my RAG system making things up?",
+      "How do I make my RAG system faster?",
+      "When should I use approximate nearest neighbor search?",
+      "What are the key metrics for evaluating retrieval quality?"
+    ]
+  }
+}

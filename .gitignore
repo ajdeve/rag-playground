@@ -1,0 +1,117 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.env
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyCharm
+.idea/
+
+# Spyder
+.spyderproject
+.spyproject
+
+# Rope
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Streamlit
+.streamlit/
+
+# Results and logs
+results/*.json
+results/*.csv
+results/*.png
+results/*.pdf
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Model cache (sentence-transformers downloads models here)
+.cache/
+models/
+sentence_transformers_cache/
+
+# Ollama logs and cache
+ollama.log
+.ollama/
+
+# Local data files (uncomment if you want to ignore custom datasets)
+# data/custom_*.json
+# data/private_*.json
+
+# Temporary files
+*.tmp
+*.temp
+.temporary/
+
+# IDE specific files
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+docs/site/
+
+# Local experiments
+experiments/local_*
+experiments/temp_*
+
+# Large files that shouldn't be in git
+*.model
+*.bin
+*.safetensors
