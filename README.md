@@ -217,22 +217,6 @@ LLMInterface("mistral")     # Alternative model
 LLMInterface("codellama")   # Code-focused model
 ```
 
-## 🎓 Learning Path
-
-1. **Week 1**: Run basic comparisons, understand the differences
-2. **Week 2**: Add your own Q&A data, see how methods perform
-3. **Week 3**: Experiment with different embedding models
-4. **Week 4**: Try parameter tuning and optimization
-5. **Week 5**: Build something new with the components!
-
-## 📝 Blog Post Ideas
-
-This repository is perfect for writing about:
-- "TF-IDF vs Embeddings: A Head-to-Head Comparison"
-- "Building Your First RAG System from Scratch"  
-- "Why Your RAG System Needs Better Retrieval"
-- "Local vs Cloud: The RAG Cost Analysis"
-
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -279,13 +263,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Ollama](https://ollama.ai/) for local LLM serving
 - [Streamlit](https://streamlit.io/) for the beautiful web interface
 
-## 📧 Contact
-
-Have questions or want to collaborate? 
-- Create an issue in this repository
-- Share your experiments and results!
-- Tag me in your blog posts about RAG learning
-
----
 
 ⭐ **Star this repo if it helped you learn about RAG systems!** ⭐
