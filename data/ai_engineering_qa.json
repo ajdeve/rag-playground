@@ -4,7 +4,12 @@
     "question": "When should I use RAG instead of fine-tuning an LLM?",
     "answer": "Use RAG when: your knowledge changes frequently, you need citations and transparency, you want to avoid fine-tuning complexity, you have unstructured documents to search. Use fine-tuning when: you need new behaviors/styles, knowledge is static, you want fastest inference, you need internalized reasoning patterns. RAG is generally easier to implement and maintain.",
     "category": "architecture",
-    "tags": ["rag", "fine-tuning", "architecture", "decision-making"],
+    "tags": [
+      "rag",
+      "fine-tuning",
+      "architecture",
+      "decision-making"
+    ],
     "expected_answer": "Use RAG when your knowledge changes frequently or you need transparency about sources. Use fine-tuning when you need the model to learn new behaviors or when knowledge is relatively static. RAG is easier to implement and maintain for most use cases."
   },
   {
@@ -12,7 +17,13 @@
     "question": "What's the real cost difference between OpenAI vs local embeddings?",
     "answer": "OpenAI text-embedding-3-small costs ~$0.02 per million tokens, while local sentence-transformers are free after setup. However, consider total cost: local requires hardware/maintenance, OpenAI has no infrastructure overhead. For startups: start with OpenAI, switch to local when hitting $100+/month in embedding costs.",
     "category": "cost",
-    "tags": ["embeddings", "cost", "openai", "local", "pricing"],
+    "tags": [
+      "embeddings",
+      "cost",
+      "openai",
+      "local",
+      "pricing"
+    ],
     "expected_answer": "OpenAI embeddings cost around $0.02 per million tokens while local embeddings are free after initial setup. Consider total cost of ownership including infrastructure and maintenance when choosing."
   },
   {
@@ -20,7 +31,12 @@
     "question": "How do I evaluate if my RAG system is actually working well?",
     "answer": "Use multi-level evaluation: 1) Retrieval quality - measure if relevant docs are retrieved (recall@k), 2) Answer quality - compare against ground truth (BLEU/ROUGE), check for hallucinations, 3) End-to-end metrics - user satisfaction, task completion rates. Start simple: create 20-50 test questions with known answers, measure accuracy percentage.",
     "category": "evaluation",
-    "tags": ["evaluation", "metrics", "quality", "testing"],
+    "tags": [
+      "evaluation",
+      "metrics",
+      "quality",
+      "testing"
+    ],
     "expected_answer": "Evaluate RAG systems at multiple levels: retrieval quality (are relevant documents found), answer quality (accuracy against ground truth), and end-to-end metrics (user satisfaction). Start with test questions and known good answers."
   },
   {
@@ -28,7 +44,12 @@
     "question": "What chunk size should I use for technical documentation?",
     "answer": "For technical docs: 300-500 tokens for specific concepts/APIs, 500-1000 tokens for complex explanations, 1000+ tokens risk losing focus. Strategy: start with 400 tokens + 50 overlap, test with actual queries, increase if answers incomplete, decrease if too much irrelevant info. Use semantic chunking (headers, code blocks) over character count.",
     "category": "preprocessing",
-    "tags": ["chunking", "preprocessing", "documentation", "optimization"],
+    "tags": [
+      "chunking",
+      "preprocessing",
+      "documentation",
+      "optimization"
+    ],
     "expected_answer": "For technical documentation, use 300-500 tokens for specific concepts and 500-1000 tokens for complex explanations. Start with 400 tokens and 50 token overlap, then adjust based on answer completeness."
   },
   {
@@ -36,7 +57,12 @@
     "question": "Why does my RAG system hallucinate even with good context?",
     "answer": "Common causes: 1) LLM fills gaps with training data, 2) Poor prompting (not telling model to stick to context), 3) Irrelevant retrieval, 4) Context overflow confuses model, 5) High temperature increases creativity. Solutions: add 'only use provided context' to prompts, filter irrelevant results, use lower temperature (0.1-0.3), consider more truthful models.",
     "category": "issues",
-    "tags": ["hallucination", "issues", "prompting", "context"],
+    "tags": [
+      "hallucination",
+      "issues",
+      "prompting",
+      "context"
+    ],
     "expected_answer": "RAG systems hallucinate due to poor prompting, irrelevant retrieval, context overflow, or high temperature settings. Fix by explicitly instructing the model to stick to provided context and using lower temperature."
   },
   {
@@ -44,7 +70,12 @@
     "question": "How do different embedding models affect retrieval quality?",
     "answer": "General purpose: all-MiniLM-L6-v2 (fast, decent), all-mpnet-base-v2 (better quality, slower). Domain-specific: multi-qa-MiniLM-L6-cos-v1 (Q&A optimized), msmarco models (search queries). Quality differences can be 10-30% improvement for technical jargon, Q&A vs similarity, cross-lingual tasks. Test with your actual data - general models often work surprisingly well.",
     "category": "embeddings",
-    "tags": ["embeddings", "models", "quality", "comparison"],
+    "tags": [
+      "embeddings",
+      "models",
+      "quality",
+      "comparison"
+    ],
     "expected_answer": "Different embedding models significantly affect retrieval quality. General models like all-MiniLM-L6-v2 are fast and decent, while domain-specific models like multi-qa-MiniLM can improve performance by 10-30% for specialized tasks."
   },
   {
@@ -52,7 +83,12 @@
     "question": "What's the minimum viable setup for production RAG?",
     "answer": "MVP stack: Vector DB - start with pgvector (if using Postgres) or Pinecone for scale. Embedding - OpenAI text-embedding-3-small for balance or local sentence-transformers for cost. LLM - GPT-3.5-turbo for MVP, upgrade to GPT-4 for quality. Infrastructure - FastAPI, Redis caching, async processing. This handles 10K+ queries/day reliably.",
     "category": "production",
-    "tags": ["production", "infrastructure", "scaling", "architecture"],
+    "tags": [
+      "production",
+      "infrastructure",
+      "scaling",
+      "architecture"
+    ],
     "expected_answer": "Minimum viable production RAG needs: a vector database (pgvector or Pinecone), embedding service (OpenAI or local), LLM (GPT-3.5-turbo), and basic infrastructure (FastAPI, caching). This setup can handle 10K+ queries daily."
   },
   {
@@ -60,7 +96,12 @@
     "question": "Which vector database should I choose for my RAG project?",
     "answer": "Decision tree: Starting/MVP - pgvector (if using Postgres), SQLite-VSS (prototypes), FAISS (experimentation). Growing scale - Pinecone (managed), Weaviate (open source), Qdrant (fast updates). Enterprise - Elasticsearch (full-text + vector), cloud solutions. Key factors: managed vs self-hosted, budget (Pinecone ~$70/month vs free self-hosted), complexity, performance needs.",
     "category": "infrastructure",
-    "tags": ["vector-database", "infrastructure", "scaling", "selection"],
+    "tags": [
+      "vector-database",
+      "infrastructure",
+      "scaling",
+      "selection"
+    ],
     "expected_answer": "Choose vector databases based on scale: pgvector for MVP, Pinecone/Weaviate for growing scale, Elasticsearch for enterprise. Consider factors like managed vs self-hosted, budget, and performance requirements."
   },
   {
@@ -68,15 +109,25 @@
     "question": "How much context should I include in my RAG prompts?",
     "answer": "Token planning: GPT-3.5 has 4K total (leave 1K for response), GPT-4 up to 128K but cost scales. Optimal strategy: 3-5 chunks, 200-400 tokens each, 1000-2000 total context. More context ≠ better answers - LLMs get confused with too much info. Focus on relevance over comprehensiveness. Start conservative (3 chunks), measure performance, optimize.",
     "category": "optimization",
-    "tags": ["context", "optimization", "prompting", "tokens"],
+    "tags": [
+      "context",
+      "optimization",
+      "prompting",
+      "tokens"
+    ],
     "expected_answer": "Include 3-5 document chunks (1000-2000 tokens total) in RAG prompts. More context doesn't always mean better answers - focus on relevance over quantity and measure performance to optimize."
   },
   {
     "id": "rag_latency",
     "question": "How can I optimize RAG system latency for real-time applications?",
     "answer": "Retrieval speed: pre-compute embeddings, use approximate nearest neighbor (HNSW/IVF), cache frequent queries, optimize vector DB settings. LLM speed: use faster models (GPT-3.5 vs GPT-4), reduce max_tokens, consider local models, implement streaming. Architecture: async processing, CDN caching, parallel retrieval/LLM calls. Target: <2s for good UX, <500ms for real-time.",
-    "category": "performance", 
-    "tags": ["latency", "performance", "optimization", "real-time"],
+    "category": "performance",
+    "tags": [
+      "latency",
+      "performance",
+      "optimization",
+      "real-time"
+    ],
     "expected_answer": "Optimize RAG latency by pre-computing embeddings, using approximate nearest neighbor search, caching queries, choosing faster models, and implementing async processing. Target under 2 seconds for good user experience."
   }
 ]

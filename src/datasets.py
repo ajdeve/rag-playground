@@ -1,11 +1,12 @@
 """
 Dataset management for RAG experiments.
 Loads Q&A data from JSON files and converts to Document objects.
+FIXED: Now includes expected_answer in metadata for generation quality evaluation.
 """
 
 import json
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any  # Added Any import
 from langchain.schema import Document
 
 
@@ -38,6 +39,7 @@ class DatasetLoader:
                 "id": "unique_id",
                 "question": "What is...?",
                 "answer": "The answer is...",
+                "expected_answer": "Expected response...",  # NEW: For generation evaluation
                 "category": "optional_category",
                 "tags": ["tag1", "tag2"]
             }
@@ -70,6 +72,7 @@ class DatasetLoader:
                 metadata = {
                     "qa_id": qa["id"],  # This is the key field!
                     "question": qa["question"],
+                    "expected_answer": qa.get("expected_answer"),  # FIXED: Include expected_answer
                     "category": qa.get("category", "general"),
                     "tags": qa.get("tags", []),
                     "source": filename
@@ -83,7 +86,8 @@ class DatasetLoader:
                     print(f"DEBUG Document {i+1} created:")
                     print(f"  - QA ID: {metadata['qa_id']}")
                     print(f"  - Question: {qa['question'][:50]}...")
-                    print(f"  - Metadata: {metadata}")
+                    print(f"  - Expected Answer: {metadata['expected_answer'][:50] if metadata['expected_answer'] else 'None'}...")
+                    print(f"  - Metadata keys: {list(metadata.keys())}")
             
             print(f"✅ Loaded {len(documents)} Q&A pairs from {filename}")
             return documents
@@ -93,23 +97,24 @@ class DatasetLoader:
         except Exception as e:
             raise ValueError(f"Error loading {filename}: {e}")
     
-    def load_test_questions(self, filename: str = "test_questions.json") -> List[str]:
+    def load_test_questions_with_mapping(self, filename: str = "test_questions.json") -> Dict[str, Any]:
         """
-        Load test questions for evaluation.
+        Load test questions with mapping information.
         
         Args:
             filename: Name of test questions file
             
         Returns:
-            List of test question strings
+            Dictionary containing questions, mapping, and metadata
             
         Expected JSON format:
         {
             "dataset": "ai_engineering",
-            "questions": [
-                "What is RAG?",
-                "How do embeddings work?"
-            ]
+            "questions": ["Question 1", "Question 2"],
+            "question_mapping": {
+                "Question 1": "qa_id_1",
+                "Question 2": "qa_id_2"
+            }
         }
         """
         file_path = self.data_dir / filename
@@ -122,61 +127,66 @@ class DatasetLoader:
                 data = json.load(f)
             
             questions = data.get("questions", [])
+            question_mapping = data.get("question_mapping", {})
+            
             if not isinstance(questions, list):
                 raise ValueError("Test questions must be a list")
             
+            if not isinstance(question_mapping, dict):
+                raise ValueError("Question mapping must be a dictionary")
+            
             print(f"✅ Loaded {len(questions)} test questions from {filename}")
-            return questions
+            print(f"✅ Loaded {len(question_mapping)} question mappings")
+            
+            return {
+                "questions": questions,
+                "question_mapping": question_mapping,
+                "dataset": data.get("dataset", "unknown"),
+                "description": data.get("description", ""),
+                "version": data.get("version", "1.0")
+            }
             
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in {filename}: {e}")
+    
+    def load_test_questions(self, filename: str = "test_questions.json") -> List[str]:
+        """
+        Load test questions for evaluation (legacy method for compatibility).
+        
+        Args:
+            filename: Name of test questions file
+            
+        Returns:
+            List of test question strings
+        """
+        try:
+            data = self.load_test_questions_with_mapping(filename)
+            return data.get("questions", [])
+        except Exception:
+            # Fallback to old format
+            file_path = self.data_dir / filename
+            
+            if not file_path.exists():
+                raise FileNotFoundError(f"Test questions file not found: {file_path}")
+            
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                
+                questions = data.get("questions", [])
+                if not isinstance(questions, list):
+                    raise ValueError("Test questions must be a list")
+                
+                print(f"✅ Loaded {len(questions)} test questions from {filename} (legacy format)")
+                return questions
+                
+            except json.JSONDecodeError as e:
+                raise ValueError(f"Invalid JSON in {filename}: {e}")
     
     def list_available_datasets(self) -> List[str]:
         """List all available dataset files in the data directory"""
         json_files = list(self.data_dir.glob("*.json"))
         return [f.name for f in json_files if not f.name.startswith("test_")]
-    
-    def create_sample_dataset(self, filename: str, dataset_type: str = "ai_engineering"):
-        """
-        Create a sample dataset file if it doesn't exist.
-        Useful for first-time setup.
-        
-        Args:
-            filename: Name for the new dataset file
-            dataset_type: Type of sample data to create
-        """
-        file_path = self.data_dir / filename
-        
-        if file_path.exists():
-            print(f"⚠️  Dataset {filename} already exists, skipping creation")
-            return
-        
-        if dataset_type == "ai_engineering":
-            # Create minimal sample for testing
-            sample_data = [
-                {
-                    "id": "rag_basics",
-                    "question": "What is RAG in AI?",
-                    "answer": "RAG (Retrieval-Augmented Generation) combines information retrieval with text generation. It retrieves relevant documents and uses them as context for generating more accurate responses.",
-                    "category": "basics",
-                    "tags": ["rag", "ai", "retrieval"]
-                },
-                {
-                    "id": "embedding_vs_tfidf",
-                    "question": "What's the difference between embeddings and TF-IDF?",
-                    "answer": "TF-IDF is keyword-based and fast but misses semantic meaning. Embeddings capture semantic relationships and understand context, but require more computation.",
-                    "category": "comparison", 
-                    "tags": ["embeddings", "tfidf", "comparison"]
-                }
-            ]
-        else:
-            raise ValueError(f"Unknown dataset type: {dataset_type}")
-        
-        # Write sample data
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(sample_data, f, indent=2, ensure_ascii=False)
-        
-        print(f"✅ Created sample dataset: {filename}")
     
     def get_dataset_info(self, filename: str) -> Dict[str, any]:
         """
@@ -199,12 +209,15 @@ class DatasetLoader:
         # Calculate statistics
         categories = set()
         all_tags = set()
+        has_expected_answers = 0
         
         for item in data:
             if 'category' in item:
                 categories.add(item['category'])
             if 'tags' in item:
                 all_tags.update(item['tags'])
+            if 'expected_answer' in item and item['expected_answer']:
+                has_expected_answers += 1
         
         return {
             "filename": filename,
@@ -212,7 +225,9 @@ class DatasetLoader:
             "categories": list(categories),
             "unique_tags": list(all_tags),
             "has_categories": len(categories) > 0,
-            "has_tags": len(all_tags) > 0
+            "has_tags": len(all_tags) > 0,
+            "expected_answers_count": has_expected_answers,
+            "generation_eval_ready": has_expected_answers > 0
         }
 
 
@@ -229,42 +244,10 @@ def load_test_questions(data_dir: str = "data") -> List[str]:
     return loader.load_test_questions("test_questions.json")
 
 
-def setup_sample_data(data_dir: str = "data"):
-    """
-    Setup sample datasets for first-time users.
-    Creates both Q&A data and test questions.
-    """
-    loader = DatasetLoader(data_dir)
-    
-    # Create sample Q&A dataset
-    loader.create_sample_dataset("ai_engineering_qa.json", "ai_engineering")
-    
-    # Create sample test questions
-    test_data = {
-        "dataset": "ai_engineering",
-        "description": "Test questions for evaluating RAG system performance",
-        "questions": [
-            "What is RAG?",
-            "How do embeddings compare to TF-IDF?",
-            "What are the benefits of retrieval-augmented generation?",
-            "When should I use semantic search vs keyword search?"
-        ]
-    }
-    
-    test_file = Path(data_dir) / "test_questions.json"
-    if not test_file.exists():
-        with open(test_file, 'w', encoding='utf-8') as f:
-            json.dump(test_data, f, indent=2, ensure_ascii=False)
-        print(f"✅ Created test questions: {test_file}")
-
-
 if __name__ == "__main__":
     # Demo usage
-    print("🗄️  Dataset Loader Demo")
-    print("=" * 30)
-    
-    # Setup sample data
-    setup_sample_data()
+    print("🗄️  Dataset Loader Demo (Fixed Version)")
+    print("=" * 40)
     
     # Load and show dataset info
     loader = DatasetLoader()
@@ -278,5 +261,14 @@ if __name__ == "__main__":
         print(f"   Test Questions: {len(questions)}")
         print(f"   Available Datasets: {loader.list_available_datasets()}")
         
+        # Check if expected answers are properly loaded
+        docs_with_expected = sum(1 for doc in documents if doc.metadata.get('expected_answer'))
+        print(f"   Documents with expected answers: {docs_with_expected}/{len(documents)}")
+        
+        if docs_with_expected > 0:
+            print("✅ Generation quality evaluation ready!")
+        else:
+            print("⚠️  No expected answers found - check your dataset")
+        
     except FileNotFoundError:
-        print("📁 Run setup_sample_data() first to create sample datasets")
+        print("📁 Run the setup script first to create sample datasets")

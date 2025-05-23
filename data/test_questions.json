@@ -9,7 +9,7 @@
     "How do I know if my RAG system is working well?",
     "Why is my RAG system making things up?",
     "Which embedding model should I choose?",
-    "What vector database is best for beginners?", 
+    "What vector database is best for beginners?",
     "How do I make my RAG system faster?",
     "What should I include in my RAG prompts?",
     "How do I handle different types of documents in RAG?"
@@ -24,32 +24,5 @@
     "What vector database is best for beginners?": "vector_databases",
     "How do I make my RAG system faster?": "rag_latency",
     "What should I include in my RAG prompts?": "context_length"
-  },
-  "categories": {
-    "architecture": ["Should I use RAG or fine-tune my language model?"],
-    "cost": ["How much do OpenAI embeddings cost compared to local models?"],
-    "evaluation": ["How do I know if my RAG system is working well?"],
-    "preprocessing": ["What's a good chunk size for documentation?"],
-    "issues": ["Why is my RAG system making things up?"],
-    "performance": ["How do I make my RAG system faster?"],
-    "optimization": ["What should I include in my RAG prompts?"],
-    "infrastructure": ["What vector database is best for beginners?"]
-  },
-  "difficulty_levels": {
-    "beginner": [
-      "Should I use RAG or fine-tune my language model?",
-      "What vector database is best for beginners?",
-      "What's a good chunk size for documentation?"
-    ],
-    "intermediate": [
-      "How much do OpenAI embeddings cost compared to local models?",
-      "How do I know if my RAG system is working well?",
-      "Which embedding model should I choose?"
-    ],
-    "advanced": [
-      "Why is my RAG system making things up?",
-      "How do I make my RAG system faster?",
-      "What should I include in my RAG prompts?"
-    ]
   }
 }
