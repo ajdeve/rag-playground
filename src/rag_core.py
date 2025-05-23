@@ -244,7 +244,7 @@ class RAGSystem:
         print(f"  - Scores being returned: {scores}")
         print(f"  - Context length: {len(context)}")
         
-        # Step 4: Return detailed results
+        # Step 4: Return detailed results with context for generation evaluation
         result = {
             "question": question,
             "answer": answer,
@@ -255,7 +255,8 @@ class RAGSystem:
             "similarity_scores": scores,
             "retrieved_qa_ids": qa_ids,  # This should now contain the actual QA IDs
             "avg_similarity": np.mean(scores) if scores else 0.0,
-            "context_length": len(context)
+            "context_length": len(context),
+            "context": context  # Include full context for generation evaluation
         }
         
         # Debug: Print the keys in the final result

@@ -14,7 +14,7 @@ from typing import Dict, List, Any
 try:
     from src.rag_core import RAGSystem, TFIDFRetriever, EmbeddingRetriever, LLMInterface
     from src.datasets import DatasetLoader
-    from src.evaluation import ExperimentRunner, RAGMetrics
+    from src.evaluation import ExperimentRunner, RAGMetrics, GenerationEvaluator
 except ImportError:
     st.error("❌ Cannot import RAG modules. Make sure you're running from the project root directory.")
     st.stop()
@@ -134,7 +134,7 @@ def main():
     st.markdown("""
     <div class="main-header">
         <h1>🤖 RAG Learning Lab</h1>
-        <p>Compare TF-IDF vs Embeddings • Experiment with Real Data • Perfect for Learning</p>
+        <p>Interactive RAG System Comparison</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -238,6 +238,9 @@ def single_question_mode(systems: Dict, selected_methods: List[str], top_k: int)
         progress_bar = st.progress(0)
         status_text = st.empty()
         
+        # Initialize generation evaluator for answer quality assessment
+        gen_evaluator = GenerationEvaluator()
+        
         results = {}
         
         for i, method_name in enumerate(selected_methods):
@@ -246,6 +249,27 @@ def single_question_mode(systems: Dict, selected_methods: List[str], top_k: int)
             
             system = systems[method_name]
             result = system.ask(current_question, top_k)
+            
+            # Try to find expected answer for generation quality evaluation
+            documents, _, _ = load_datasets()
+            expected_answer = None
+            
+            if documents:
+                # Simple matching logic
+                for doc in documents:
+                    doc_question = doc.metadata.get('question', '')
+                    if current_question.lower() in doc_question.lower() or doc_question.lower() in current_question.lower():
+                        expected_answer = doc.metadata.get('expected_answer')
+                        break
+            
+            # Add generation quality if we found an expected answer
+            if expected_answer:
+                answer_similarity = gen_evaluator.evaluate_answer_similarity(
+                    result.get('answer', ''), expected_answer
+                )
+                result['expected_answer'] = expected_answer
+                result['answer_similarity'] = answer_similarity
+            
             results[method_name] = result
         
         progress_bar.empty()
@@ -283,7 +307,7 @@ def display_single_question_results(question: str, results: Dict):
         st.metric("Avg Similarity", f"{avg_sim:.3f}")
     
     # Add explainability section
-    st.subheader("🧠 Understanding the Comparison")
+    st.subheader("Understanding the Comparison")
     
     # Quick insights
     if len(results) == 2:
@@ -297,25 +321,25 @@ def display_single_question_results(question: str, results: Dict):
         
         col1, col2 = st.columns(2)
         with col1:
-            st.info(f"🎯 **Better Retrieval:** {better_similarity} found more relevant content")
+            st.info(f"**Better Retrieval:** {better_similarity} found more relevant content")
         with col2:
-            st.info(f"⚡ **Faster Method:** {faster_method} responded quicker")
+            st.info(f"**Faster Method:** {faster_method} responded quicker")
         
         # Show if they retrieved different documents
         docs1 = set(result1.get('retrieved_qa_ids', []))
         docs2 = set(result2.get('retrieved_qa_ids', []))
         
         if docs1 != docs2:
-            st.warning(f"🔄 **Different Documents Retrieved:** Methods found different content sources")
+            st.warning(f"**Different Documents Retrieved:** Methods found different content sources")
             unique_to_1 = docs1 - docs2
             unique_to_2 = docs2 - docs1
             
             if unique_to_1:
-                st.write(f"📄 Only {method1} found: {', '.join(unique_to_1)}")
+                st.write(f"Only {method1} found: {', '.join(unique_to_1)}")
             if unique_to_2:
-                st.write(f"📄 Only {method2} found: {', '.join(unique_to_2)}")
+                st.write(f"Only {method2} found: {', '.join(unique_to_2)}")
         else:
-            st.success("✅ **Same Documents:** Both methods retrieved identical sources")
+            st.success("**Same Documents:** Both methods retrieved identical sources")
     
     # Side-by-side comparison with enhanced details
     if len(results) == 2:
@@ -329,52 +353,6 @@ def display_single_question_results(question: str, results: Dict):
         # Stacked display for multiple methods
         for method, result in results.items():
             display_method_result(method, result, documents)
-    
-    # Add detailed analysis section
-    st.subheader("📊 Detailed Analysis")
-    
-    # Create comparison dataframe
-    comparison_data = []
-    for method, result in results.items():
-        comparison_data.append({
-            "Method": method,
-            "Model": "all-MiniLM-L6-v2" if "embedding" in method.lower() else "TF-IDF Vectorizer",
-            "Similarity Score": f"{result.get('avg_similarity', 0):.3f}",
-            "Response Time": f"{result.get('retrieval_time', 0):.3f}s",
-            "Documents Found": result.get('docs_found', 0),
-            "Context Length": f"{result.get('context_length', 0)} chars",
-            "Retrieved Doc IDs": ", ".join(result.get('retrieved_qa_ids', []))
-        })
-    
-    df = pd.DataFrame(comparison_data)
-    st.dataframe(df, use_container_width=True)
-    
-    # Show query analysis for TF-IDF if available
-    if any("tfidf" in method.lower() for method in results.keys()):
-        with st.expander("🔍 TF-IDF Query Analysis", expanded=False):
-            st.write("**How TF-IDF processed your query:**")
-            
-            # This would need to be implemented in the backend
-            st.code(f"""
-Query: "{question}"
-Preprocessing: Lowercase, remove stopwords, tokenize
-Key terms identified: [would show actual terms]
-Term weights: [would show TF-IDF weights]
-            """)
-            
-            st.write("💡 TF-IDF matches based on exact word overlap and term importance.")
-    
-    # Embedding visualization concept
-    if any("embedding" in method.lower() for method in results.keys()):
-        with st.expander("🤗 Embedding Method Details", expanded=False):
-            st.write("**Sentence Transformer Process:**")
-            st.write(f"1. **Input:** '{question}'")
-            st.write("2. **Tokenization:** Split into subwords using WordPiece")
-            st.write("3. **Encoding:** Transform to 384-dimensional vector")
-            st.write("4. **Similarity:** Calculate cosine similarity with document vectors")
-            st.write("5. **Ranking:** Sort by similarity score")
-            
-            st.info("💡 Embeddings capture semantic meaning - 'car' and 'vehicle' have similar vectors even though they're different words.")
 
 
 def display_method_result(method: str, result: Dict, documents: List = None):
@@ -874,19 +852,6 @@ def add_sidebar_info():
     st.sidebar.write("**Top-K**: Retrieve most similar documents")
     st.sidebar.write("**Similarity Threshold**: 0.1 (minimum relevance)")
     st.sidebar.write("**Cosine Similarity**: Measures angle between vectors (0-1)")
-    
-    # Performance expectations
-    st.sidebar.markdown("---")
-    st.sidebar.subheader("📈 Expected Performance")
-    st.sidebar.write("**TF-IDF**:")
-    st.sidebar.write("   • Speed: ~0.1s")
-    st.sidebar.write("   • Good for: Exact keyword matches")
-    st.sidebar.write("   • Struggles with: Synonyms, context")
-    
-    st.sidebar.write("**Embeddings**:")
-    st.sidebar.write("   • Speed: ~0.2s")  
-    st.sidebar.write("   • Good for: Semantic meaning")
-    st.sidebar.write("   • Struggles with: Very specific terms")
     
     st.sidebar.markdown("---")
     st.sidebar.subheader("📚 Learn More")
